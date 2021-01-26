@@ -45,7 +45,7 @@ void OvmsVehicleMitsubishiOutlander::IncomingPollReply(canbus* bus, uint16_t typ
         {
             // 27 10 48 0
             // 49 0 18 4E
-            //ESP_LOGW(TAG, "FMCU Data: %X %X %X %X %X %X %X %X Len: %u Rem: %u",data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],length,mlremain);
+            //ESP_LOGW(TAG, "FMCU Data: %X %X %X %X Len: %u Rem: %u",data[0],data[1],data[2],data[3],length,mlremain);
             //unsigned int frontRPM = data[2]*256+data[3]-20000;
             //ESP_LOGI(TAG, "Front Motor RPM = %u",frontRPM);
             break;
@@ -55,7 +55,7 @@ void OvmsVehicleMitsubishiOutlander::IncomingPollReply(canbus* bus, uint16_t typ
         {
             // 27 10 48 0
             // 49 0 18 4E
-            //ESP_LOGW(TAG, "RMCU Data: %X %X %X %X %X %X %X %X Len: %u Rem: %u",data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],length,mlremain);
+            //ESP_LOGW(TAG, "RMCU Data: %X %X %X %X Len: %u Rem: %u",data[0],data[1],data[2],data[3],length,mlremain);
             //unsigned int rearRPM = data[2]*256+data[3]-20000;
             //ESP_LOGI(TAG, "Rear Motor RPM = %u",rearRPM);
             break;

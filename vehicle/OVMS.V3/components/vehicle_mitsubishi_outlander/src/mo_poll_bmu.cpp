@@ -55,8 +55,6 @@ void OvmsVehicleMitsubishiOutlander::IncomingBmuPoll(
 
 void OvmsVehicleMitsubishiOutlander::BMUresponse1(uint16_t m_poll_ml_frame, uint8_t* data)
 {
-    //float avgModuleTemp;
-    
     switch (m_poll_ml_frame) {
         case 0:
         {
@@ -70,7 +68,7 @@ void OvmsVehicleMitsubishiOutlander::BMUresponse1(uint16_t m_poll_ml_frame, uint
             float displayedSOC = data[1]-60;
             OvmsMetricFloat* xmi_bat_soc_display = MyMetrics.InitFloat("xmi.b.soc.display", 10, 0, Percentage);
             xmi_bat_soc_display->SetValue(displayedSOC*2/3);
-            StandardMetrics.ms_v_bat_soc->SetValue( displayedSOC*2/3, Percentage);
+            StandardMetrics.ms_v_bat_soc->SetValue(displayedSOC*2/3, Percentage);
             // Battery Cell Max Voltage 0x0EEE = 3822  0x0ED7 = 3799 Calculated in BMUresponse2()
             //float batteryCellMaxVoltage = data[2]*256+data[3];
             //StandardMetrics.ms_v_bat_pack_vmax->SetValue(batteryCellMaxVoltage/1000, Volts);
@@ -78,6 +76,7 @@ void OvmsVehicleMitsubishiOutlander::BMUresponse1(uint16_t m_poll_ml_frame, uint
         }
         case 1:
         {
+            //ESP_LOGW("762 PID 1 Line 2", "Data: %02X, %02X, %02X, %02X, %02X, %02X, %02X", data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
             // Calculated in BMUresponse2()
             //unsigned int batteryPackMinV = data[1] * 256 + data[2];
             //StandardMetrics.ms_v_bat_pack_vmin->SetValue(batteryPackMinV/1000, Volts);
@@ -102,18 +101,11 @@ void OvmsVehicleMitsubishiOutlander::BMUresponse1(uint16_t m_poll_ml_frame, uint
         case 4:
         {
             // battery "max" capacity
-            //unsigned int batteryCapacity = data[2] * 256.0 + data[3];
-            //StandardMetrics.ms_v_bat_cac->SetValue(batteryCapacity / 10.0,AmpHours);
             StandardMetrics.ms_v_bat_cac->SetValue(((data[2] * 256.0 + data[3]) / 10.0));
             // battery remain capacity
-            //unsigned int batteryRemaining = data[4] * 256.0 + data[5];
-            //ms_v_bat_cac_rem->SetValue(batteryRemaining / 10.0);
             ms_v_bat_cac_rem->SetValue(((data[4] * 256.0 + data[5]) / 10.0));
             //max charging kW
-            //unsigned int batteryMaxInput = data[6];
-            //ms_v_bat_max_input->SetValue(batteryMaxInput / 4.0);
-            ms_v_bat_max_input->SetValue(data[6] / 4.0);
-            //StandardMetrics.ms_v_charge_climit->SetValue(data[6] / 4.0, Amps);
+            StandardMetrics.ms_v_charge_climit->SetValue(data[6] / 4.0, Amps);
             break;
         }
         case 5:
@@ -198,7 +190,6 @@ void OvmsVehicleMitsubishiOutlander::BMUresponse2(uint16_t m_poll_ml_frame, uint
         StandardMetrics.ms_v_bat_pack_vmax->SetValue(maxV);
         StandardMetrics.ms_v_bat_pack_vavg->SetValue((StandardMetrics.ms_v_bat_pack_vmin->AsFloat()+StandardMetrics.ms_v_bat_pack_vmax->AsFloat())/2);
         //ESP_LOGW(TAG, "Total Voltage = %.2f", totalVoltage);
-        //ESP_LOGW(TAG, "Max Voltage = %.4f Min Voltage = %.4f Average = %.4f", StandardMetrics.ms_v_bat_pack_vmax->AsFloat(), StandardMetrics.ms_v_bat_pack_vmin->AsFloat(), StandardMetrics.ms_v_bat_pack_vavg->AsFloat());
         voltCell = 0;
     }
 }
@@ -209,7 +200,6 @@ void OvmsVehicleMitsubishiOutlander::BMUresponse3(uint16_t m_poll_ml_frame, uint
     {
         tempCell = 0;
     }
-    //ESP_LOGW(TAG, "Frame:%X Data: %x %x %x %x %x %x %x %x Length: %u Remaining: %u", m_poll_ml_frame, data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], length, mlremain);
     for (int i=0; i < length; i++)
     {
         {
@@ -220,7 +210,6 @@ void OvmsVehicleMitsubishiOutlander::BMUresponse3(uint16_t m_poll_ml_frame, uint
     
     // All data processed
     if (mlremain == 0) {
-        //ESP_LOGW(TAG, "Cell Count T = %u", tempCell);
         float temperature;
         int minT = 50;
         int maxT = 0;
@@ -247,7 +236,6 @@ void OvmsVehicleMitsubishiOutlander::BMUresponse3(uint16_t m_poll_ml_frame, uint
         StandardMetrics.ms_v_bat_pack_tmin->SetValue(minT, Celcius);
         StandardMetrics.ms_v_bat_pack_tmax->SetValue(maxT, Celcius);
         StandardMetrics.ms_v_bat_pack_tavg->SetValue((StandardMetrics.ms_v_bat_pack_tmin->AsFloat()+StandardMetrics.ms_v_bat_pack_tmax->AsFloat())/2);
-        //ESP_LOGW(TAG, "Max Temperature = %.4f Min Temperature = %.4f Average = %.4f", StandardMetrics.ms_v_bat_pack_tmax->AsFloat(), StandardMetrics.ms_v_bat_pack_tmin->AsFloat(), StandardMetrics.ms_v_bat_pack_tavg->AsFloat());
         tempCell = 0;
     }
 }
