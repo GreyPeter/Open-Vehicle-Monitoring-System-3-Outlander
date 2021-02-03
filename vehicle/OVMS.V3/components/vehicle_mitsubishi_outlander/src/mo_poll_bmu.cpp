@@ -171,7 +171,9 @@ void OvmsVehicleMitsubishiOutlander::BMUresponse2(uint16_t m_poll_ml_frame, uint
             if(voltage < minV) minV = voltage;
             if(voltage > maxV) maxV = voltage;
             StandardMetrics.ms_v_bat_cell_voltage->SetElemValue(i, voltage);
-            
+            if(voltage < StandardMetrics.ms_v_bat_cell_vmin->AsFloat(i)) StandardMetrics.ms_v_bat_cell_vmin->SetElemValue(i,voltage);
+            if(voltage > StandardMetrics.ms_v_bat_cell_vmax->AsFloat(i)) StandardMetrics.ms_v_bat_cell_vmax->SetElemValue(i,voltage);
+            /*
             if(StandardMetrics.ms_v_bat_cell_vmin->AsFloat(i) == 0)
             {
                 StandardMetrics.ms_v_bat_cell_vmin->SetElemValue(i,voltage);
@@ -185,6 +187,7 @@ void OvmsVehicleMitsubishiOutlander::BMUresponse2(uint16_t m_poll_ml_frame, uint
             } else {
                 if(StandardMetrics.ms_v_bat_cell_vmax->AsFloat(i) > voltage) StandardMetrics.ms_v_bat_cell_vmax->SetElemValue(i,voltage);
             }
+             */
         }
         StandardMetrics.ms_v_bat_pack_vmin->SetValue(minV);
         StandardMetrics.ms_v_bat_pack_vmax->SetValue(maxV);
@@ -218,7 +221,9 @@ void OvmsVehicleMitsubishiOutlander::BMUresponse3(uint16_t m_poll_ml_frame, uint
             if(temperature < minT) minT = temperature;
             if(temperature > maxT) maxT = temperature;
             StandardMetrics.ms_v_bat_cell_temp->SetElemValue(i,temperature);
-            
+            if(temperature < StandardMetrics.ms_v_bat_cell_tmin->AsFloat(i)) StandardMetrics.ms_v_bat_cell_tmin->SetElemValue(i,temperature);
+            if(temperature > StandardMetrics.ms_v_bat_cell_tmax->AsFloat(i)) StandardMetrics.ms_v_bat_cell_tmax->SetElemValue(i,temperature);
+            /*
             if(StandardMetrics.ms_v_bat_cell_tmin->AsFloat(i) == 0)
             {
                 StandardMetrics.ms_v_bat_cell_tmin->SetElemValue(i,temperature);
@@ -232,10 +237,12 @@ void OvmsVehicleMitsubishiOutlander::BMUresponse3(uint16_t m_poll_ml_frame, uint
             } else {
                 if(StandardMetrics.ms_v_bat_cell_tmax->AsFloat(i) > temperature) StandardMetrics.ms_v_bat_cell_tmax->SetElemValue(i,temperature);
             }
+             */
         }
         StandardMetrics.ms_v_bat_pack_tmin->SetValue(minT, Celcius);
         StandardMetrics.ms_v_bat_pack_tmax->SetValue(maxT, Celcius);
         StandardMetrics.ms_v_bat_pack_tavg->SetValue((StandardMetrics.ms_v_bat_pack_tmin->AsFloat()+StandardMetrics.ms_v_bat_pack_tmax->AsFloat())/2);
+        StandardMetrics.ms_v_bat_temp->SetValue(maxT);
         tempCell = 0;
     }
 }

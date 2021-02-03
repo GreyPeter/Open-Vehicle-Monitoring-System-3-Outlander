@@ -40,16 +40,21 @@ static const char *TAG = "v-mo";
 // {txmoduleid,rxmoduleid,type,pid,{pid for additional payload, payload length, payload data},pollbus,protocol}
 static const OvmsVehicle::poll_pid_t obdii_polls[] =
 {
-    { bmuTxId, bmuRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,  0x01,{ 0, 7, 7 }, 0, ISOTP_STD }, // cac
-    { bmuTxId, bmuRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,  0x02,{ 0, 7, 7 }, 0, ISOTP_STD }, // cac
-    { bmuTxId, bmuRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,  0x03,{ 0, 7, 7 }, 0, ISOTP_STD }, // cac
+    {bmuTxId, bmuRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,0x01,{0,7,7}, 0,ISOTP_STD }, // cac
+    {bmuTxId, bmuRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,0x02,{0,7,7}, 0,ISOTP_STD }, // cac
+    {bmuTxId, bmuRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,0x03,{0,7,7}, 0,ISOTP_STD }, // cac
     
-    { obcTxId, obcRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,  0x01,{ 0, 7,  7 }, 0, ISOTP_STD }, // OBC
-    { obcTxId, obcRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,  0x02,{ 0, 7,  7 }, 0, ISOTP_STD }, // OBC
-    { obcTxId, obcRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,  0x03,{ 0, 7,  7 }, 0, ISOTP_STD }, // OBC
+    { obcTxId, obcRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,0x01,{0,7,7}, 0,ISOTP_STD }, // OBC
+    { obcTxId, obcRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,0x02,{0,7,7}, 0,ISOTP_STD }, // OBC
+    { obcTxId, obcRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,0x03,{0,7,7}, 0,ISOTP_STD }, // OBC
     
-    { fmcuTxId, fmcuRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,  0x01,{ 0, 4, 4 }, 0, ISOTP_STD }, //Front Motor Control Unit FMCU
-    { rmcuTxId, rmcuRxId, VEHICLE_POLL_TYPE_OBDIIGROUP,  0x01,{ 0, 4, 4 }, 0, ISOTP_STD }, //Rear Motor Control Unit RMCU
+    {fmcuTxId,fmcuRxId,VEHICLE_POLL_TYPE_OBDIIGROUP,0x01,{0,4,4},0,ISOTP_STD},//Front Motor Control Unit
+    {rmcuTxId,rmcuRxId,VEHICLE_POLL_TYPE_OBDIIGROUP,0x01,{0,4,4},0,ISOTP_STD},//Rear Motor Control Unit
+    
+    {0x731, 0x732, VEHICLE_POLL_TYPE_OBDIIGROUP,0x01,{0,7,7}, 0,ISOTP_STD },
+    {0x733, 0x734, VEHICLE_POLL_TYPE_OBDIIGROUP,0x01,{0,7,7}, 0,ISOTP_STD },
+    {0x759, 0x75a, VEHICLE_POLL_TYPE_OBDIIGROUP,0x01,{0,7,7}, 0,ISOTP_STD },
+
     POLL_LIST_END
 };
 
@@ -66,6 +71,7 @@ OvmsVehicleMitsubishiOutlander::OvmsVehicleMitsubishiOutlander()
     StandardMetrics.ms_v_bat_voltage->SetValue(0);
     StandardMetrics.ms_v_bat_current->SetValue(0);
     StandardMetrics.ms_v_bat_power->SetValue(0);
+    StandardMetrics.ms_v_bat_consumption->SetValue(134);
     StandardMetrics.ms_v_bat_energy_used->SetValue(0);
     StandardMetrics.ms_v_bat_energy_recd->SetValue(0);
     StandardMetrics.ms_v_bat_range_full->SetValue(52);
@@ -73,7 +79,7 @@ OvmsVehicleMitsubishiOutlander::OvmsVehicleMitsubishiOutlander()
     StandardMetrics.ms_v_bat_range_est->SetValue(0);
     StandardMetrics.ms_v_bat_12v_voltage->SetValue(0);
     StandardMetrics.ms_v_bat_12v_current->SetValue(0);
-    StandardMetrics.ms_v_bat_temp->SetValue(25);
+    StandardMetrics.ms_v_bat_temp->SetValue(0);
     StandardMetrics.ms_v_charge_voltage->SetValue(0);
     StandardMetrics.ms_v_charge_current->SetValue(0);
     StandardMetrics.ms_v_charge_climit->SetValue(0);
@@ -91,10 +97,10 @@ OvmsVehicleMitsubishiOutlander::OvmsVehicleMitsubishiOutlander()
     StandardMetrics.ms_v_charge_duration_full->SetValue(0);
     StandardMetrics.ms_v_charge_duration_range->SetValue(0);
     StandardMetrics.ms_v_charge_duration_soc->SetValue(0);
-    StandardMetrics.ms_v_charge_temp->SetValue(22);
-    StandardMetrics.ms_v_inv_temp->SetValue(22);
+    StandardMetrics.ms_v_charge_temp->SetValue(0);
+    StandardMetrics.ms_v_inv_temp->SetValue(0);
     StandardMetrics.ms_v_mot_rpm->SetValue(0);
-    StandardMetrics.ms_v_mot_temp->SetValue(30);
+    StandardMetrics.ms_v_mot_temp->SetValue(0);
     StandardMetrics.ms_v_door_fl->SetValue(false);
     StandardMetrics.ms_v_door_fr->SetValue(false);
     StandardMetrics.ms_v_door_rl->SetValue(false);
@@ -116,7 +122,7 @@ OvmsVehicleMitsubishiOutlander::OvmsVehicleMitsubishiOutlander()
     StandardMetrics.ms_v_env_alarm->SetValue(false);
     StandardMetrics.ms_v_env_ctrl_login->SetValue(false);
     StandardMetrics.ms_v_env_ctrl_config->SetValue(false);
-    StandardMetrics.ms_v_env_temp->SetValue(22);
+    StandardMetrics.ms_v_env_temp->SetValue(0);
     //  StandardMetrics.ms_v_pos_gpslock->SetValue(true);
     //  StandardMetrics.ms_v_pos_satcount->SetValue(12);
     //  StandardMetrics.ms_v_pos_latitude->SetValue(22.280868);
@@ -127,14 +133,17 @@ OvmsVehicleMitsubishiOutlander::OvmsVehicleMitsubishiOutlander()
     //StandardMetrics.ms_v_pos_odometer->SetValue(100000);
     StandardMetrics.ms_v_pos_trip->SetValue(0);
     /*
-    StandardMetrics.ms_v_tpms_pressure->SetValue(std::vector<float>{ 0, 0, 0, 0 });
-    StandardMetrics.ms_v_tpms_temp->SetValue(std::vector<float>{ 0, 0, 0, 0 });
-    StandardMetrics.ms_v_tpms_health->SetValue(std::vector<float>{ 0, 0, 0, 0 });
-    StandardMetrics.ms_v_tpms_alert->SetValue(std::vector<short>{ 0, 0, 0, 0 });
-    */
+     StandardMetrics.ms_v_tpms_pressure->SetValue(std::vector<float>{ 0, 0, 0, 0 });
+     StandardMetrics.ms_v_tpms_temp->SetValue(std::vector<float>{ 0, 0, 0, 0 });
+     StandardMetrics.ms_v_tpms_health->SetValue(std::vector<float>{ 0, 0, 0, 0 });
+     StandardMetrics.ms_v_tpms_alert->SetValue(std::vector<short>{ 0, 0, 0, 0 });
+     */
     RegisterCanBus(1,CAN_MODE_ACTIVE,CAN_SPEED_500KBPS);
     PollSetPidList(m_can1,obdii_polls);
     PollSetState(1);
+#ifdef CONFIG_OVMS_COMP_WEBSERVER
+    WebInit();
+#endif
 }
 
 OvmsVehicleMitsubishiOutlander::~OvmsVehicleMitsubishiOutlander()
@@ -152,38 +161,56 @@ void OvmsVehicleMitsubishiOutlander::Ticker1(uint32_t ticker)
         ////////////////////////////////////////////////////////////////////////
         // Charge state determination
         ////////////////////////////////////////////////////////////////////////
-        if(StandardMetrics.ms_v_charge_inprogress->AsBool())
+        
+        if(StandardMetrics.ms_v_charge_inprogress->AsBool() && StandardMetrics.ms_v_bat_power->AsFloat()<0)
         {
             if(StandardMetrics.ms_v_charge_pilot->AsBool()) // Charging is ongoing
             {
                 StandardMetrics.ms_v_charge_state->SetValue("charging");
-                StandardMetrics.ms_v_charge_inprogress->SetValue(true);
                 StandardMetrics.ms_v_charge_voltage->SetValue(240, Volts);
-                StandardMetrics.ms_v_charge_current->SetValue(StandardMetrics.ms_v_bat_power->AsFloat()*1000 / 240 * -1.5, Amps);
+                StandardMetrics.ms_v_charge_current->SetValue(StandardMetrics.ms_v_bat_power->AsFloat()*1000/240*-1.14, Amps);
                 StandardMetrics.ms_v_charge_power->SetValue((StandardMetrics.ms_v_charge_voltage->AsFloat() * StandardMetrics.ms_v_charge_current->AsFloat()) / 1000, kW);
-                // if charge and DC current is negative cell balancing is active.
-                if ((StandardMetrics.ms_v_bat_current->AsFloat() < 0) && StandardMetrics.ms_v_bat_soc->AsInt() > 92 && StandardMetrics.ms_v_charge_mode->AsString() != "Balancing")
+                // Calculate charge time remaining
+                //StandardMetrics.ms_v_charge_duration_full->SetValue(calcMinutesRemaining(100, StandardMetrics.ms_v_charge_power->AsFloat()*1000));
+                if (StandardMetrics.ms_v_bat_current->AsFloat() > 10)
                 {
-                    StandardMetrics.ms_v_charge_mode->SetValue("Balancing");
+                    StandardMetrics.ms_v_charge_climit->SetValue("16");
+                } else {
+                    StandardMetrics.ms_v_charge_climit->SetValue("10");
+                }
+                // if charge and DC current is negative cell balancing is active.
+                if ((StandardMetrics.ms_v_bat_current->AsFloat() < 0) && StandardMetrics.ms_v_bat_soc->AsInt() > 92 && StandardMetrics.ms_v_charge_mode->AsString() != "balancing")
+                {
+                    StandardMetrics.ms_v_charge_mode->SetValue("balancing");
                     StandardMetrics.ms_v_charge_state->SetValue("topoff");
                 }
             } else { // Charge has just started
+                //POLLSTATE_CHARGING;
                 StandardMetrics.ms_v_charge_inprogress->SetValue(true);
                 StandardMetrics.ms_v_charge_pilot->SetValue(true);
                 StandardMetrics.ms_v_door_chargeport->SetValue(true);
                 StandardMetrics.ms_v_charge_substate->SetValue("onrequest");
                 StandardMetrics.ms_v_charge_duration_full->SetValue(0);
+                StandardMetrics.ms_v_charge_time->SetValue(0);
+                StandardMetrics.ms_v_charge_kwh->SetValue(0); // Reset charge kWh
+                mo_cum_energy_charge_wh = 0.0f;
             }
             
         } else { // Not charging
+            
             if (StandardMetrics.ms_v_charge_pilot->AsBool())
+            {
                 // Charge has stopped
                 StandardMetrics.ms_v_charge_inprogress->SetValue(false);
-            StandardMetrics.ms_v_charge_pilot->SetValue(false);
-            StandardMetrics.ms_v_door_chargeport->SetValue(false);
-            StandardMetrics.ms_v_env_charging12v->SetValue(false);
-            StandardMetrics.ms_v_charge_type->SetValue("None");
-            StandardMetrics.ms_v_charge_duration_full->SetValue(0);
+                StandardMetrics.ms_v_charge_pilot->SetValue(false);
+                StandardMetrics.ms_v_door_chargeport->SetValue(false);
+                StandardMetrics.ms_v_env_charging12v->SetValue(false);
+                StandardMetrics.ms_v_charge_type->SetValue("None");
+                StandardMetrics.ms_v_charge_duration_full->SetValue(0);
+                StandardMetrics.ms_v_charge_kwh->SetValue(0); // Reset charge kWh
+                mo_cum_energy_charge_wh = 0.0f;
+                //POLLSTATE_OFF
+            }
             if (StandardMetrics.ms_v_bat_soc->AsInt() < 92)
             {
                 // Assume charge was interrupted
@@ -226,158 +253,175 @@ void OvmsVehicleMitsubishiOutlander::Ticker10(uint32_t ticker)
         StdMetrics.ms_v_bat_range_ideal->SetValue(StandardMetrics.ms_v_bat_range_full->AsFloat() * StdMetrics.ms_v_bat_soc->AsFloat() / 100.0);
         StdMetrics.ms_v_bat_soh->SetValue((StdMetrics.ms_v_bat_cac->AsFloat() / newCarAh) * 100);
     }
-    /*
-    if (StandardMetrics.ms_v_charge_inprogress->AsBool())
+    
+    // Energy (in wh) from 10s worth of power
+    float energy = StandardMetrics.ms_v_bat_power->AsFloat()*1000/360;
+    if (energy < 0.0)
     {
-        // We are charging
-        float soc = StandardMetrics.ms_v_bat_soc->AsFloat();
-        if (soc < 100)
-        {
-            soc += 0.1;
-            StandardMetrics.ms_v_bat_soc->SetValue(soc);
-        }
-        else
-        {
-            // Car full
-            StandardMetrics.ms_v_charge_inprogress->SetValue(false);
-            StandardMetrics.ms_v_door_chargeport->SetValue(false);
-            StandardMetrics.ms_v_charge_state->SetValue("done");
-            StandardMetrics.ms_v_charge_substate->SetValue("stopped");
-            StandardMetrics.ms_v_charge_pilot->SetValue(false);
-            StandardMetrics.ms_v_charge_voltage->SetValue(0);
-            StandardMetrics.ms_v_charge_current->SetValue(0);
-        }
+        mo_cum_energy_recd_wh -= energy;
+        mo_cum_energy_charge_wh -= energy;
     }
-    else if (StandardMetrics.ms_v_env_on->AsBool())
+    else
     {
-        // We are driving
-        float soc = StandardMetrics.ms_v_bat_soc->AsFloat();
-        if (soc > 0)
-        {
-            int speed = StandardMetrics.ms_v_pos_speed->AsInt() + (rand()%3) -1;
-            if (speed<0) speed = 0;
-            else if (speed>100) speed = 100;
-            soc -= 0.1;
-            StandardMetrics.ms_v_bat_soc->SetValue(soc);
-            StandardMetrics.ms_v_pos_speed->SetValue(speed);
-            StandardMetrics.ms_v_mot_rpm->SetValue(speed*112);
-        }
-        else
-        {
-            // Battery is empty. Charge the car...
-            StandardMetrics.ms_v_pos_speed->SetValue(0);
-            StandardMetrics.ms_v_mot_rpm->SetValue(0);
-            StandardMetrics.ms_v_env_on->SetValue(false);
-            StandardMetrics.ms_v_charge_inprogress->SetValue(true);
-            StandardMetrics.ms_v_door_chargeport->SetValue(true);
-            StandardMetrics.ms_v_charge_state->SetValue("charging");
-            StandardMetrics.ms_v_charge_substate->SetValue("onrequest");
-            StandardMetrics.ms_v_charge_pilot->SetValue(true);
-            StandardMetrics.ms_v_charge_voltage->SetValue(220);
-            StandardMetrics.ms_v_charge_current->SetValue(32);
-        }
+        mo_cum_energy_used_wh = mo_cum_energy_used_wh + energy;
     }
-     */
+    //ESP_LOGW(TAG, "Energy: %f Energy Rxed: %fWh Energy Charge: %fWh Energy Used: %fWh", energy, mo_cum_energy_recd_wh, mo_cum_energy_charge_wh, mo_cum_energy_used_wh);
+    if(StandardMetrics.ms_v_charge_inprogress->AsBool())
+    {
+        StandardMetrics.ms_v_charge_kwh->SetValue(mo_cum_energy_charge_wh/1000);
+    }
 }
 
-OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandSetChargeMode(vehicle_mode_t mode)
+void OvmsVehicleMitsubishiOutlander::Ticker60(uint32_t ticker)
 {
-    return NotImplemented;
+    if(StandardMetrics.ms_v_charge_inprogress->AsBool())
+    {
+        //StandardMetrics.ms_v_charge_time->SetValue(StandardMetrics.ms_v_charge_time->AsInt()+60);
+        //StandardMetrics.ms_v_charge_kwh->SetValue(StandardMetrics.ms_v_charge_kwh->AsFloat()+StandardMetrics.ms_v_bat_power->AsFloat()/60* -1.0);
+        // Calculate charge time remaining
+        StandardMetrics.ms_v_charge_duration_full->SetValue(calcMinutesRemaining(100, StandardMetrics.ms_v_charge_power->AsFloat()*1000));
+        ESP_LOGW(TAG, "Charge Time: %u mins Power: %.4f kWh Remaining: %u mins", StandardMetrics.ms_v_charge_time->AsInt()/60, StandardMetrics.ms_v_charge_kwh->AsFloat(),StandardMetrics.ms_v_charge_duration_full->AsInt());
+    }
+    // Update any derived values
+    // Energy used varies a lot during driving
+    HandleEnergy();
 }
 
-OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandSetChargeCurrent(uint16_t limit)
+
+
+ OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandSetChargeMode(vehicle_mode_t mode)
+ {
+ return NotImplemented;
+ }
+ 
+ OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandSetChargeCurrent(uint16_t limit)
+ {
+ StandardMetrics.ms_v_charge_climit->SetValue(limit);
+ 
+ return Success;
+ }
+ 
+ OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandStartCharge()
+ {
+ StandardMetrics.ms_v_pos_speed->SetValue(0);
+ StandardMetrics.ms_v_mot_rpm->SetValue(0);
+ StandardMetrics.ms_v_env_on->SetValue(false);
+ StandardMetrics.ms_v_charge_inprogress->SetValue(true);
+ StandardMetrics.ms_v_door_chargeport->SetValue(true);
+ StandardMetrics.ms_v_charge_state->SetValue("charging");
+ StandardMetrics.ms_v_charge_substate->SetValue("onrequest");
+ StandardMetrics.ms_v_charge_pilot->SetValue(true);
+ StandardMetrics.ms_v_charge_voltage->SetValue(220);
+ StandardMetrics.ms_v_charge_current->SetValue(32);
+ 
+ return Success;
+ }
+ 
+ OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandStopCharge()
+ {
+ StandardMetrics.ms_v_charge_inprogress->SetValue(false);
+ StandardMetrics.ms_v_door_chargeport->SetValue(false);
+ StandardMetrics.ms_v_charge_state->SetValue("done");
+ StandardMetrics.ms_v_charge_substate->SetValue("stopped");
+ StandardMetrics.ms_v_charge_pilot->SetValue(false);
+ StandardMetrics.ms_v_charge_voltage->SetValue(0);
+ StandardMetrics.ms_v_charge_current->SetValue(0);
+ 
+ return Success;
+ }
+ 
+ OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandSetChargeTimer(bool timeron, uint16_t timerstart)
+ {
+ return NotImplemented;
+ }
+ 
+ OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandCooldown(bool cooldownon)
+ {
+ return NotImplemented;
+ }
+ 
+ OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandWakeup()
+ {
+ StandardMetrics.ms_v_charge_inprogress->SetValue(false);
+ StandardMetrics.ms_v_door_chargeport->SetValue(false);
+ StandardMetrics.ms_v_charge_state->SetValue("done");
+ StandardMetrics.ms_v_charge_substate->SetValue("stopped");
+ StandardMetrics.ms_v_charge_pilot->SetValue(false);
+ StandardMetrics.ms_v_charge_voltage->SetValue(0);
+ StandardMetrics.ms_v_charge_current->SetValue(0);
+ StandardMetrics.ms_v_env_on->SetValue(true);
+ 
+ return Success;
+ }
+ 
+ OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandLock(const char* pin)
+ {
+ StandardMetrics.ms_v_env_locked->SetValue(true);
+ 
+ return Success;
+ }
+ 
+ OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandUnlock(const char* pin)
+ {
+ StandardMetrics.ms_v_env_locked->SetValue(false);
+ 
+ return Success;
+ }
+ 
+ OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandActivateValet(const char* pin)
+ {
+ StandardMetrics.ms_v_env_valet->SetValue(true);
+ 
+ return Success;
+ }
+ 
+ OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandDeactivateValet(const char* pin)
+ {
+ StandardMetrics.ms_v_env_valet->SetValue(false);
+ 
+ return Success;
+ }
+ 
+ OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandHomelink(int button, int durationms)
+ {
+ return NotImplemented;
+ }
+
+int OvmsVehicleMitsubishiOutlander::calcMinutesRemaining(float target_soc, float charge_power_w)
 {
-    StandardMetrics.ms_v_charge_climit->SetValue(limit);
-    
-    return Success;
+    float bat_soc = StandardMetrics.ms_v_bat_soc->AsFloat(100);
+    if (bat_soc > target_soc)
+    {
+        ESP_LOGW(TAG, "Battery SOC %.1f > Target SOC %.1f", bat_soc, target_soc);
+        return 0;   // Done!
+    }
+    float bat_cap_kwh     = 12;
+    float remaining_wh    = bat_cap_kwh * 1000.0 * (target_soc - bat_soc) / 100.0;
+    float remaining_hours = remaining_wh / charge_power_w;
+    float remaining_mins  = remaining_hours * 60.0;
+    return MIN( 1440, (int)remaining_mins );
 }
 
-OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandStartCharge()
+/**
+ * Update derived energy metrics while driving
+ * Called once per second from Ticker1
+ */
+void OvmsVehicleMitsubishiOutlander::HandleEnergy()
 {
-    StandardMetrics.ms_v_pos_speed->SetValue(0);
-    StandardMetrics.ms_v_mot_rpm->SetValue(0);
-    StandardMetrics.ms_v_env_on->SetValue(false);
-    StandardMetrics.ms_v_charge_inprogress->SetValue(true);
-    StandardMetrics.ms_v_door_chargeport->SetValue(true);
-    StandardMetrics.ms_v_charge_state->SetValue("charging");
-    StandardMetrics.ms_v_charge_substate->SetValue("onrequest");
-    StandardMetrics.ms_v_charge_pilot->SetValue(true);
-    StandardMetrics.ms_v_charge_voltage->SetValue(220);
-    StandardMetrics.ms_v_charge_current->SetValue(32);
-    
-    return Success;
+    // Are we driving?
+    if (StandardMetrics.ms_v_env_on->AsBool() &&
+        (mo_cum_energy_used_wh > 0.0f || mo_cum_energy_recd_wh > 0.0f) )
+    {
+        // Update energy used and recovered
+        StandardMetrics.ms_v_bat_energy_used->SetValue( StandardMetrics.ms_v_bat_energy_used->AsFloat() + mo_cum_energy_used_wh / 1000.0, kWh);
+        StandardMetrics.ms_v_bat_energy_recd->SetValue( StandardMetrics.ms_v_bat_energy_recd->AsFloat() + mo_cum_energy_recd_wh / 1000.0, kWh);
+        mo_cum_energy_used_wh = 0.0f;
+        mo_cum_energy_recd_wh = 0.0f;
+        StandardMetrics.ms_v_bat_consumption->SetValue(StandardMetrics.ms_v_bat_power->AsFloat()/StandardMetrics.ms_v_pos_speed->AsFloat());
+        ESP_LOGW(TAG, "Battery Used: %f kWh Battery Received: %f Consumption: %.1f Wh/km", StandardMetrics.ms_v_bat_energy_used->AsFloat(), StandardMetrics.ms_v_bat_energy_recd->AsFloat(), StandardMetrics.ms_v_bat_consumption->AsFloat());
+    }
 }
-
-OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandStopCharge()
-{
-    StandardMetrics.ms_v_charge_inprogress->SetValue(false);
-    StandardMetrics.ms_v_door_chargeport->SetValue(false);
-    StandardMetrics.ms_v_charge_state->SetValue("done");
-    StandardMetrics.ms_v_charge_substate->SetValue("stopped");
-    StandardMetrics.ms_v_charge_pilot->SetValue(false);
-    StandardMetrics.ms_v_charge_voltage->SetValue(0);
-    StandardMetrics.ms_v_charge_current->SetValue(0);
-    
-    return Success;
-}
-
-OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandSetChargeTimer(bool timeron, uint16_t timerstart)
-{
-    return NotImplemented;
-}
-
-OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandCooldown(bool cooldownon)
-{
-    return NotImplemented;
-}
-
-OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandWakeup()
-{
-    StandardMetrics.ms_v_charge_inprogress->SetValue(false);
-    StandardMetrics.ms_v_door_chargeport->SetValue(false);
-    StandardMetrics.ms_v_charge_state->SetValue("done");
-    StandardMetrics.ms_v_charge_substate->SetValue("stopped");
-    StandardMetrics.ms_v_charge_pilot->SetValue(false);
-    StandardMetrics.ms_v_charge_voltage->SetValue(0);
-    StandardMetrics.ms_v_charge_current->SetValue(0);
-    StandardMetrics.ms_v_env_on->SetValue(true);
-    
-    return Success;
-}
-
-OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandLock(const char* pin)
-{
-    StandardMetrics.ms_v_env_locked->SetValue(true);
-    
-    return Success;
-}
-
-OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandUnlock(const char* pin)
-{
-    StandardMetrics.ms_v_env_locked->SetValue(false);
-    
-    return Success;
-}
-
-OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandActivateValet(const char* pin)
-{
-    StandardMetrics.ms_v_env_valet->SetValue(true);
-    
-    return Success;
-}
-
-OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandDeactivateValet(const char* pin)
-{
-    StandardMetrics.ms_v_env_valet->SetValue(false);
-    
-    return Success;
-}
-
-OvmsVehicle::vehicle_command_t OvmsVehicleMitsubishiOutlander::CommandHomelink(int button, int durationms)
-{
-    return NotImplemented;
-}
-
+ 
 class OvmsVehicleMitsubishiOutlanderInit
 {
 public: OvmsVehicleMitsubishiOutlanderInit();

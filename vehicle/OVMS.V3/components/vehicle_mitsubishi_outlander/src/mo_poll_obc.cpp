@@ -104,19 +104,14 @@ void OvmsVehicleMitsubishiOutlander::OBCresponse2(uint16_t m_poll_ml_frame, uint
             //bool obcPermit = data[0]&0x80;
             //bool reservedCharging = data[0]&0x40;
             StandardMetrics.ms_v_charge_inprogress->SetValue(data[0]&0x20);
-            //bool chargFlag = data[0]&0x20;
-            if (StandardMetrics.ms_v_charge_inprogress->AsBool())
-            {
-                ESP_LOGE(TAG, "CHARGING");
-            } else {
-                ESP_LOGW(TAG, "Not Charging");
-            }
+            bool chargFlag = data[0]&0x20;
+            if (chargFlag) ESP_LOGE(TAG, "Charge in Progress");
             bool abnormalStop = data[0]&0x10;
             if (abnormalStop) ESP_LOGE(TAG, "Abnormal Stop");
             bool s2Switch = data[0]&0x08;
             if(s2Switch) ESP_LOGE(TAG, "Something Happened");
-            bool coolRequest = data[0]&0x04;
-            if (coolRequest) ESP_LOGW(TAG, "Cooling Request");
+            //bool coolRequest = data[0]&0x04;
+            //if (coolRequest) ESP_LOGW(TAG, "Cooling Request");
             //bool controlPSrequest = data[0]&0x02;
             //bool pfcStartup = data[0]&0x01;
             // bool inputCurrent0PointCheck = data[1]&0x80;
@@ -206,6 +201,7 @@ void OvmsVehicleMitsubishiOutlander::OBCresponse3(uint16_t m_poll_ml_frame, uint
             unsigned int DCDCoutputB = data[2];
             unsigned int DCDCoutputCurrent = data[3];
             StandardMetrics.ms_v_charge_12v_current->SetValue(DCDCoutputCurrent/10, Amps);
+            StandardMetrics.ms_v_bat_12v_current->SetValue(DCDCoutputCurrent/10, Amps);
             StandardMetrics.ms_v_charge_12v_power->SetValue(StandardMetrics.ms_v_charge_12v_voltage->AsFloat()*StandardMetrics.ms_v_charge_12v_current->AsFloat(), Watts);
             unsigned int DCDCpowerSupplyV = data[4];
             unsigned int DCDCInverterTemp1 = data[5];

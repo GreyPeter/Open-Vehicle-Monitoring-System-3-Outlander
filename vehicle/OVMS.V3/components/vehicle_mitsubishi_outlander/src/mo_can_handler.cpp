@@ -40,13 +40,28 @@ void OvmsVehicleMitsubishiOutlander::IncomingFrameCan1(CAN_frame_t* p_frame)
     switch (p_frame->MsgID) {
         case 0x101: //freq10 //Key status 00=OFF 04=ON 44=?? 84=??
             if (d[0] && 4) {  // Car is on
-                ESP_LOGV(TAG,"Car is on");
-                StdMetrics.ms_v_env_awake->SetValue(true);
+                if(!StdMetrics.ms_v_env_on->AsBool()){ // Just been turned on
+                    ESP_LOGI(TAG,"Car is on");
+                    //POLLSTATE_RUNNING;
+                    StdMetrics.ms_v_env_charging12v->SetValue( true );
+                    StdMetrics.ms_v_env_awake->SetValue(true);
+                    // Reset trip values
+                    StandardMetrics.ms_v_bat_energy_recd->SetValue(0);
+                    StandardMetrics.ms_v_bat_energy_used->SetValue(0);
+                    mo_cum_energy_recd_wh = 0.0f;
+                    mo_cum_energy_used_wh = 0.0f;
+                }
                 StdMetrics.ms_v_env_on->SetValue(true);
             } else {
                 ESP_LOGV(TAG,"Car is off");
                 StdMetrics.ms_v_env_awake->SetValue(false);
                 StdMetrics.ms_v_env_on->SetValue(false);
+                StdMetrics.ms_v_pos_speed->SetValue( 0 );
+                StdMetrics.ms_v_env_charging12v->SetValue( false );
+                if (StandardMetrics.ms_v_charge_state->AsString()  != "charging")
+                  {
+                  //POLLSTATE_OFF;
+                  }
             }
             break;
         case 0x154: // Fuel and odometer
@@ -191,7 +206,7 @@ void OvmsVehicleMitsubishiOutlander::IncomingFrameCan1(CAN_frame_t* p_frame)
         }
         case 0x608: // Temperatures
             StandardMetrics.ms_v_mot_temp->SetValue(d[0], Fahrenheit);
-            StandardMetrics.ms_v_mot_temp->SetValue(d[1], Fahrenheit);
+            StandardMetrics.ms_v_env_temp->SetValue(d[1], Fahrenheit);
             break;
             
         case 0x6FA://freq10 // VIN determination //6FA VIN2
